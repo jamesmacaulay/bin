@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+class Branch
+  def self.all
+    `git branch`.strip.split(/\s+\*?\s+/).map {|b| new(b)}.sort do |a,b|
+      a.timestamp <=> b.timestamp
+    end
+  end
+  
+  attr_reader :name, :timestamp
+  def initialize(name)
+    @name = name
+    @timestamp = `git rev-list #{name} -n1 --timestamp`.split.first.to_i
+  end
+end
+
+Branch.all.each {|b| puts b.name}

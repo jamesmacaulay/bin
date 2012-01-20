@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+# gemmate
+
+# open the directory of a rubygem as a project in textmate
+# responds to anything that `gem which` can handle
+# e.g.:
+# gemmate autotest
+# => `mate /Library/Ruby/Gems/1.8/gems/ZenTest-3.11.0`
+# gemmate active_record
+# => `mate /Library/Ruby/Gems/1.8/gems/activerecord-2.2.2`
+
+file = `gem which --no-verbose #{ARGV[0]}`
+chunks = File.dirname(file).split(File::SEPARATOR)
+chunks.reverse.each_with_index do |chunk, i|
+  break if chunks[-2] == 'gems'
+  chunks.pop
+end
+puts (cmd = "mate #{File.join chunks}")
+system(cmd)

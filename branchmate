@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+# branchmate
+# opens whichever files you've modified in this git branch compared to master
+target = ARGV[0] || 'HEAD'
+
+p (cmd = "git diff #{target} --name-only")
+
+files = `#{cmd}`.split.reject {|f| f =~ /^vendor/}
+puts files.join("\n")
+
+if files.length > 10
+  puts "\nReally open all #{files.length} files? [y/N]"
+  exit unless $stdin.gets =~ /^[Yy]/
+end
+
+`mate .`
+files.each {|file| system("subl #{file}")}

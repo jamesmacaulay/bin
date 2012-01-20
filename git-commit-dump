@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+#
+# show all your fscking commits
+# use like:
+# git commit-dump --author=james --after="2010-12-31" --before="2012-01-01"
+
+LOG_FORMAT="format:%cd %ad %h %s"
+
+# branches = `git branch`.strip.split(/\s+\*?\s+/)
+
+log_args = ARGV.map(&:inspect).join(" ")
+
+commits = []
+# 
+# branches.each do |branch|
+#   commits |= `git log --date=short --format="#{LOG_FORMAT}" #{log_args} #{branch}`.split("\n")
+# end
+
+commits |= `git log --all --date=short --format="#{LOG_FORMAT}" #{log_args}`.split("\n")
+
+unreachable = `git fsck --unreachable | grep commit`
+
+unreachable.lines.each do |line|
+  sha = line.chomp[/\S+$/]
+  commits |= `git log --date=short --format="#{LOG_FORMAT}" #{log_args} #{sha}^..#{sha}`.split("\n")
+end
+
+puts commits.sort
